@@ -1,5 +1,5 @@
 %%--------------------------------------------------------------------
-%% Copyright (c) 2020 EMQ Technologies Co., Ltd. All Rights Reserved.
+%% Copyright (c) 2020-2021 EMQ Technologies Co., Ltd. All Rights Reserved.
 %%
 %% Licensed under the Apache License, Version 2.0 (the "License");
 %% you may not use this file except in compliance with the License.
@@ -100,7 +100,7 @@ t_heartbeat(_) ->
                                                      {<<"host">>, <<"127.0.0.1:61613">>},
                                                      {<<"login">>, <<"guest">>},
                                                      {<<"passcode">>, <<"guest">>},
-                                                     {<<"heart-beat">>, <<"500,800">>}])),
+                                                     {<<"heart-beat">>, <<"1000,2000">>}])),
                         {ok, Data} = gen_tcp:recv(Sock, 0),
                         {ok, #stomp_frame{command = <<"CONNECTED">>,
                                           headers = _,
@@ -345,5 +345,5 @@ parse(Data) ->
     ProtoEnv = [{max_headers, 10},
                 {max_header_length, 1024},
                 {max_body_length, 8192}],
-    ParseFun = emqx_stomp_frame:parser(ProtoEnv),
-    ParseFun(Data).
+    Parser = emqx_stomp_frame:init_parer_state(ProtoEnv),
+    emqx_stomp_frame:parse(Data, Parser).
